@@ -1,0 +1,34 @@
+CodePipelineRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: !Sub 'collins-{properties.solution.key}-pipeline-role-${BranchName}'
+    PermissionsBoundary: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/Collins/Collins-Boundary
+    AssumeRolePolicyDocument:
+      Statement:
+      - Action: sts:AssumeRole
+        Effect: Allow
+        Principal:
+          Service:
+          - codepipeline.amazonaws.com
+        Sid: 1
+    Path: /
+    Policies:
+    - PolicyDocument:
+        Statement:
+        # Your pipeline will generally need permissions to store and retrieve artifacts in Amazon S3.
+        # It will also need permissions to detect changes to your repository, start
+        # a build against your AWS CodeBuild project, and create an AWS CloudFormation stack
+        # containing your runtime resources.
+        - Action:
+          - s3:*
+          - codecommit:*
+          - codebuild:*
+          - codedeploy:*
+          - cloudformation:*
+          - lambda:InvokeFunction
+          - sns:*
+          - iam:PassRole
+          Effect: Allow
+          Resource: "*"
+      PolicyName: CodePipelineRolePolicy
+    

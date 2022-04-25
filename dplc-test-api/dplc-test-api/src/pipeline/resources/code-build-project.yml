@@ -1,0 +1,30 @@
+CodeBuildProject:
+  Type: AWS::CodeBuild::Project
+  Properties: 
+    Name: !Ref PipelineName
+    Artifacts:
+      Type: CODEPIPELINE
+      EncryptionDisabled: true
+    Environment:
+      ComputeType: BUILD_GENERAL1_SMALL
+      PrivilegedMode: true
+      Image: !Ref CodeBuildImage
+      Type: LINUX_CONTAINER
+      EnvironmentVariables:
+      - Name: AWS_ACCOUNT_ID
+        Value: !Ref AWS::AccountId
+      - Name: AWS_REGION
+        Value: !Ref AWS::Region
+    ServiceRole: !Ref CodeBuildRole
+    Source:
+      Type: CODEPIPELINE
+    Tags: 
+      - 
+        Key: Environment
+        Value: !Ref Environment
+      - 
+        Key: Service
+        Value: {properties.solution.key}
+      - 
+        Key: BuildNumber
+        Value: {properties.build.number}

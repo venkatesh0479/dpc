@@ -1,0 +1,3 @@
+{
+    "buildNumber": "{properties.build.number}"
+}

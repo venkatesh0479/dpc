@@ -1,0 +1,36 @@
+CodePipelineDeployerRole:
+  Type: AWS::IAM::Role
+  Description: Creating service role in IAM for AWS CloudFormation
+  Properties:
+    RoleName: !Sub 'collins-{properties.solution.key}-deployer-role-${BranchName}'
+    PermissionsBoundary: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/Collins/Collins-Boundary
+    AssumeRolePolicyDocument:
+      Statement:
+      - Action: sts:AssumeRole
+        Effect: Allow
+        Principal:
+          Service:
+          - cloudformation.amazonaws.com
+    Path: /
+    Policies:
+    - PolicyDocument:
+        Statement:
+        - Action:
+          - codestar:*
+          - s3:*
+          - lambda:*
+          - dynamodb:*
+          - kinesis:*
+          - cloudformation:*
+          - sns:*
+          - config:*
+          - iam:*
+          - apigateway:*
+          - ec2:*
+          - elasticloadbalancing:*
+          - autoscaling:*
+          - codedeploy:*
+          Effect: Allow
+          Resource: '*'
+      PolicyName: CodePipelineDeployerRolePolicy
+  

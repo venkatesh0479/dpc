@@ -1,0 +1,11 @@
+{
+  "Parameters": {
+    "Environment": "{properties.env}",
+    "SuffixName": "dev"
+  },
+  "Tags": {
+    "Environment": "{properties.env}",
+    "Serivce": "{properties.solution.key}",
+    "BuildNumber": "{properties.build.number}"
+  }
+}

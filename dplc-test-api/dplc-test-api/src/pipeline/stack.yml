@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: {properties.solution.name} pipeline. Build {properties.build.number}
+Parameters:
+
+  # Pipeline name
+  PipelineName:
+    Type: String
+    Description: Name of pipeline
+
+  # Repository name
+  RepositoryName:
+    Type: String
+    Description: Name of the repo
+
+  # Branch name
+  BranchName:
+    Type: String
+    Description: Name of the repo branch
+ 
+  # Environment flag
+  # Used to tag resources with the DEV, QA or Prod environment tag
+  Environment:
+    Type: String
+    Description: Enter DEV, QA or PRD. Default is DEV.
+    Default: dev
+    AllowedValues:
+      - dev
+      - qa
+      - prd
+
+  # Docker image used during the build phase
+  CodeBuildImage:
+    Type: String
+    Default: aws/codebuild/standard:2.0
+    Description: Docker image to use for the build phase
+
+  # S3 bucket used to store pipeline artifacts
+  CodePipelineArtifactBucketName:
+    Type: String
+    Description: Name of the pipeline artifact bucket
+
+Resources:
+
+<!-- inject:resources:yml -->
+<!-- Contents of resources partials will be injected here -->
+<!-- endinject -->
+
+# Outputs
+Outputs:
+
+  CodePipelineName: 
+    Description: "Name of the code pipeline"
+    Value: !Ref CodePipeline

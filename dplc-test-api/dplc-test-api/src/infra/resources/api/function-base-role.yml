@@ -1,0 +1,37 @@
+# Base role for functions
+FunctionBaseRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: !Sub 'collins-{properties.solution.key}-fnc-base-role-${SuffixName}'
+    PermissionsBoundary: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/Collins/Collins-Boundary
+    AssumeRolePolicyDocument:
+      Statement:
+      - Effect: Allow
+        Action: sts:AssumeRole
+        Principal:
+          Service: lambda.amazonaws.com
+      Version: 2012-10-17
+    Policies:
+      - PolicyName: CanLog
+        PolicyDocument: 
+          Version: 2012-10-17
+          Statement: 
+            - Effect: Allow
+              Action:
+                - logs:CreateLogStream
+                - logs:CreateLogGroup
+                - logs:PutLogEvents
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:*'
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: '*'
+      - PolicyName: Ec2CreateEni
+        PolicyDocument: 
+          Version: 2012-10-17
+          Statement: 
+            - Effect: Allow
+              Action:
+                - ec2:*
+              Resource: '*'

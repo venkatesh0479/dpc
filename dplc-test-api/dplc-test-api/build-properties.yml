@@ -1,0 +1,26 @@
+env: dev
+build:
+  majorVersion: 1
+  minorVersion: 0
+  srcDir: src
+  outDir: out
+solution:
+  name: DPLC Test API S3
+  key: dplc-test-api-S3
+project:
+  infra:
+    name: DPLC Test API S3
+    key: dplc-test-api-S3
+  pipeline:  
+    name: Account Automation API S3
+    key: dplc-test-api-pipeline-S3
+aws:
+  region: us-east-2
+  profile: dplc.sbx
+  bucketName: dplc-test-api-s3-mybucket-w86jb9sjx6wb
+  infra:
+    stackName: dplc-test-api-s3
+  pipeline:
+    stackName: dplc-test-api-pipeline-s3
+    repositoryName: dplc-test-api-s3
+    repositoryBranchName: develop

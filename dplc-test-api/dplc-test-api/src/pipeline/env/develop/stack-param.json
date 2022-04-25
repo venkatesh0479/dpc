@@ -1,0 +1,54 @@
+{
+  "StackName": "{properties.aws.pipeline.stackName}-{properties.aws.pipeline.repositoryBranchName}",
+  "TemplateURL": "https://s3.{properties.aws.region}.amazonaws.com/{properties.aws.bucketName}/{properties.aws.bucketPath}/{properties.aws.pipeline.stackName}.yml",
+  "Capabilities": [
+    "CAPABILITY_NAMED_IAM",
+    "CAPABILITY_IAM"
+  ],
+  "Parameters": [
+    {
+      "ParameterKey": "Environment",
+      "ParameterValue": "{properties.env}",
+      "UsePreviousValue": false
+    },
+    {
+      "ParameterKey": "PipelineName",
+      "ParameterValue": "{properties.solution.key}-{properties.aws.pipeline.repositoryBranchName}",
+      "UsePreviousValue": false
+    },
+    {
+      "ParameterKey": "RepositoryName",
+      "ParameterValue": "{properties.aws.pipeline.repositoryName}",
+      "UsePreviousValue": false
+    },
+    {
+      "ParameterKey": "BranchName",
+      "ParameterValue": "{properties.aws.pipeline.repositoryBranchName}",
+      "UsePreviousValue": false
+    },
+    {
+      "ParameterKey": "CodeBuildImage",
+      "ParameterValue": "aws/codebuild/standard:5.0",
+      "UsePreviousValue": false
+    },
+    {
+      "ParameterKey": "CodePipelineArtifactBucketName",
+      "ParameterValue": "{properties.aws.bucketName}",
+      "UsePreviousValue": false
+    }
+  ],
+  "Tags": [
+    {
+      "Key": "Environment",
+      "Value": "{properties.env}"
+    },
+    {
+      "Key": "Service",
+      "Value": "{properties.solution.key}"
+    },
+    {
+      "Key": "BuildNumber",
+      "Value": "{properties.build.number}"
+    }
+  ]
+}

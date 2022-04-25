@@ -1,0 +1,35 @@
+{
+  "StackName": "{properties.aws.infra.stackName}-${properties.aws.suffixName}",
+  "TemplateURL": "https://s3.{properties.aws.region}.amazonaws.com/{properties.aws.bucketName}/{properties.aws.bucketPath}/{properties.aws.infra.stackName}.yml",
+  "Capabilities": [
+    "CAPABILITY_NAMED_IAM",
+    "CAPABILITY_IAM",
+    "CAPABILITY_AUTO_EXPAND"
+  ],
+  "Parameters": [
+    {
+      "ParameterKey": "Environment",
+      "ParameterValue": "{properties.env}",
+      "UsePreviousValue": false
+    },
+    {
+      "ParameterKey": "SuffixName",
+      "ParameterValue": "{properties.aws.suffixName}",
+      "UsePreviousValue": false
+    }
+  ],
+  "Tags": [
+    {
+      "Key": "Environment",
+      "Value": "{properties.env}"
+    },
+    {
+      "Key": "Service",
+      "Value": "{properties.solution.key}"
+    },
+    {
+      "Key": "BuildNumber",
+      "Value": "{properties.build.number}"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+CodeBuildRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: !Sub 'collins-{properties.solution.key}-codebuild-role-${BranchName}'
+    PermissionsBoundary: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/Collins/Collins-Boundary
+    AssumeRolePolicyDocument:
+      Statement:
+      - Effect: Allow
+        Action: 'sts:AssumeRole'
+        Principal:
+          Service: codebuild.amazonaws.com
+      Version: 2012-10-17
+    Policies:
+      - PolicyName: CanLog
+        PolicyDocument: 
+          Version: 2012-10-17
+          Statement: 
+            - Effect: Allow
+              Action:
+                - logs:CreateLogStream
+                - logs:CreateLogGroup
+                - logs:PutLogEvents
+              Resource:
+                - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${PipelineName}*:log-stream:*'
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !Sub 'arn:aws:s3:::${CodePipelineArtifactBucketName}'
+                - !Sub 'arn:aws:s3:::${CodePipelineArtifactBucketName}/*'
+      - PolicyName: CanBuildReport
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - codebuild:CreateReportGroup
+                - codebuild:CreateReport
+                - codebuild:UpdateReport
+                - codebuild:BatchPutTestCases
+              Resource: "*"
+      - PolicyName: CanAccessS3
+        PolicyDocument: 
+          Version: 2012-10-17
+          Statement: 
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource:
+                - !Sub 'arn:aws:s3:::${CodePipelineArtifactBucketName}'
+      - PolicyName: CanNotify
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - lambda:InvokeFunction
+              Resource: "*"
+
+

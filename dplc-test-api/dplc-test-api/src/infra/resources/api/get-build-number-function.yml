@@ -1,0 +1,28 @@
+
+# Get the service build number
+GetBuildNumberFunction:
+  Type: AWS::Serverless::Function
+  Properties:
+    Handler: Handler.getBuildNumber
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 100
+    Description: Get the build number
+    CodeUri: s3://{properties.aws.bucketName}/{properties.aws.bucketPath}/{properties.solution.key}.zip
+    Role: !GetAtt FunctionBaseRole.Arn
+    # Environment:
+    #   Variables:
+    #     TableNamePrefix: !Ref TableNamePrefix
+    Events:
+      Api:
+        Type: Api
+        Properties:
+          RestApiId: !Ref Api
+          Path: /info/buildnumber
+          Method: GET
+          # Auth:
+          #   Authorizer: NONE
+    Tags:
+      Environment: {properties.env}
+      Service: {properties.solution.key}
+      BuildNumber: {properties.build.number}

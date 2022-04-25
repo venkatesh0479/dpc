@@ -1,0 +1,82 @@
+# API Definition
+Api:
+  Type: AWS::Serverless::Api
+  Properties:
+    Description: {properties.solution.name} API. Build {properties.build.number}
+    StageName: Prod
+
+    # # Domain and certificate
+    # Domain:
+    #   DomainName: !Ref DomainName
+    #   CertificateArn: !Ref CertArn
+    #   EndpointConfiguration: REGIONAL
+    #   Route53:
+    #     HostedZoneId: !Ref HostedZoneId
+    #   BasePath:
+    #     - /v1
+
+    # Authentication using Cognito
+    # Auth:
+    #   AddDefaultAuthorizerToCorsPreflight: false
+    #   ApiKeyRequired: false
+    #   DefaultAuthorizer: CognitoAuthorizer
+    #   InvokeRole: CALLER_CREDENTIALS
+    #   Authorizers:
+    #     CognitoAuthorizer:
+    #       UserPoolArn:
+    #         !Sub 'arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolId}'
+    #       AuthType: COGNITO_USER_POOLS
+
+    # Cross-Origin Resource Sharing (CORS)
+    Cors:
+      AllowMethods: "'POST, GET, PUT, PATCH, DELETE'"
+      AllowOrigin: "'*'"
+      AllowHeaders: "'Content-Type, content-type, Authorization, authorization'"
+
+    # Custom responses
+    GatewayResponses:
+
+      # Missing authentication token
+      MISSING_AUTHENTICATION_TOKEN:
+        StatusCode: 404
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Headers: "'*'"
+            Access-Control-Allow-Origin: "'*'"
+        ResponseTemplates:
+          "application/json": '{ "message-mat": $context.error.messageString }'
+
+      # Unauthorized
+      UNAUTHORIZED:
+        StatusCode: 404
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Headers: "'*'"
+            Access-Control-Allow-Origin: "'*'"
+        ResponseTemplates:
+          "application/json": '{ "message-u": $context.error.messageString }'
+
+      # Expired token
+      EXPIRED_TOKEN:
+        StatusCode: 403
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Headers: "'*'"
+            Access-Control-Allow-Origin: "'*'"
+        ResponseTemplates:
+          "application/json": '{ "message-exp": $context.error.messageString }'
+
+      # Default 5XX error
+      DEFAULT_5XX:
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Headers: "'*'"
+            Access-Control-Allow-Origin: "'*'"
+        ResponseTemplates:
+          "application/json": '{ "message-d5": $context.error.messageString }'
+    
+    # Tags
+    Tags:
+      Environment: {properties.env}
+      Service: {properties.solution.key}
+      BuildNumber: {properties.build.number}

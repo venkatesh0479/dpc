@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: {properties.solution.name}. Build {properties.build.number}
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Parameters:
+
+  # Environment flag
+  # Used to tag resources with the DEV, QA or Prod environment tag
+  Environment:
+    Type: String
+    Description: Enter dev, qa or prd. Default is dev.
+    Default: dev
+    AllowedValues:
+      - dev
+      - qa
+      - prd
+
+  # Suffix used for resource naming
+  SuffixName:
+    Type: String
+
+Resources:
+
+<!-- inject:resources:yml -->
+<!-- Contents of resources partials will be injected here -->
+<!-- endinject -->
+
+# Outputs
+Outputs:
+
+  WebEndpoint:
+    Description: "Build number API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/info/buildnumber"

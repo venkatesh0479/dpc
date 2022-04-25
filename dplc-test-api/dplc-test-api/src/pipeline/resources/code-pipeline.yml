@@ -1,0 +1,82 @@
+# https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
+CodePipeline:
+  Type: AWS::CodePipeline::Pipeline
+  DependsOn:
+    - CodePipelineRole
+    - CodeBuildProject
+  Properties: 
+    Name: !Ref PipelineName
+    ArtifactStore:
+      Location: !Ref CodePipelineArtifactBucketName
+      Type: S3
+    RoleArn: !GetAtt CodePipelineRole.Arn
+    Stages:
+      - Actions:
+        - ActionTypeId:
+            Category: Source
+            Owner: AWS
+            Provider: S3
+            Version: 1
+          Configuration:
+            RepositoryName: !Ref RepositoryName
+            BranchName: !Ref BranchName
+            PollForSourceChanges: false            
+          InputArtifacts: []
+          Name: get-source
+          Namespace: sourceVariables
+          OutputArtifacts:
+          - Name: sourceArtifacts
+          RunOrder: 1
+        Name: source
+      - Actions:
+        - ActionTypeId:
+            Category: Build
+            Owner: AWS
+            Provider: CodeBuild
+            Version: 1
+          Configuration:
+            ProjectName: !Ref PipelineName
+            EnvironmentVariables: '[{"name":"STACK_NAME","value":"{properties.aws.infra.stackName}","type":"PLAINTEXT"}]'
+          InputArtifacts:
+          - Name: sourceArtifacts
+          Name: build-source
+          Namespace: buildVariables
+          OutputArtifacts:
+          - Name: infraArtifacts
+          RunOrder: 1
+        Name: build
+      - Actions:
+        - ActionTypeId:
+            Category: Deploy
+            Owner: AWS
+            Provider: S3
+            Version: 1
+          Configuration:
+            BucketName: !Ref CodePipelineArtifactBucketName
+            ObjectKey: artifacts/{properties.solution.key}/#{buildVariables.BUILD_NUMBER}
+            Extract: true 
+          InputArtifacts:
+          - Name: infraArtifacts
+          Name: PublishS3
+          Namespace: publishVariables
+          RunOrder: 1
+        Name: publish
+      - Actions: 
+        - ActionTypeId: 
+            Category: Deploy 
+            Owner: AWS 
+            Provider: CloudFormation 
+            Version: 1 
+          Configuration:
+            ActionMode: CREATE_UPDATE
+            Capabilities: CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+            RoleArn: !GetAtt CodePipelineDeployerRole.Arn
+            StackName: {properties.aws.infra.stackName}-{properties.env}
+            TemplatePath: infraArtifacts::{properties.aws.infra.stackName}.yml
+            TemplateConfiguration: infraArtifacts::stack-config.json
+          InputArtifacts:
+            - Name: infraArtifacts
+          Name: deploy-dev-infra
+          RunOrder: 1
+          Namespace: deployDevInfraVariables
+        Name: deploy-dev
